@@ -1,12 +1,8 @@
-package teachmakitra.microservices.spring.product.dto;
+package teachmakitra.microservices.spring.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
-import lombok.Value;
-
-import java.util.List;
 
 @AllArgsConstructor
 public class ResponseDto<T>{
