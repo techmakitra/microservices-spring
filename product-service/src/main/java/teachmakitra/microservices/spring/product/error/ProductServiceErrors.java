@@ -1,4 +1,4 @@
-package teachmakitra.microservices.spring.product.dto;
+package teachmakitra.microservices.spring.product.error;
 
 import teachmakitra.microservices.spring.common.exception.ErrorCode;
 

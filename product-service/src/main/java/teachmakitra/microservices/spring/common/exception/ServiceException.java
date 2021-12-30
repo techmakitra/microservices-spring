@@ -15,8 +15,7 @@ public class ServiceException extends RuntimeException {
     HttpStatus status;
     ErrorCode code;
     Map<String, String> attributes;
-    @Singular
-    List<String> errors;
+    List<ErrorCode> errors;
 
     @Builder
     public ServiceException(String message,
@@ -24,7 +23,7 @@ public class ServiceException extends RuntimeException {
                             ErrorCode code,
                             Map<String, String> attributes,
                             HttpStatus status,
-                            List<String> errors) {
+                            List<ErrorCode> errors) {
         super(message, cause);
         this.status = status;
         this.attributes = attributes;
@@ -52,6 +51,11 @@ public class ServiceException extends RuntimeException {
 
         public ServiceExceptionBuilder attribute(String name, Object value) {
             this.attributes.put(name, String.valueOf(value));
+            return this;
+        }
+
+        public ServiceExceptionBuilder error(ErrorCode error) {
+            this.errors.add(error);
             return this;
         }
     }
