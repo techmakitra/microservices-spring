@@ -1,4 +1,4 @@
-package teachmakitra.microservices.spring.product.dto;
+package teachmakitra.microservices.spring.common.dto;
 
 import lombok.Builder;
 import lombok.Data;

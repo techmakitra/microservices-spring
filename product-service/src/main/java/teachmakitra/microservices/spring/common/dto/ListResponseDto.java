@@ -3,7 +3,6 @@ package teachmakitra.microservices.spring.common.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import teachmakitra.microservices.spring.product.dto.PageDto;
 
 import java.util.List;
 

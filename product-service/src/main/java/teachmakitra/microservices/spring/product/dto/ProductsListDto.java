@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 @Builder
 public class ProductsListDto {
-    private List<ProductDetailsDto> products;
+    private List<ProductDto> products;
 }
