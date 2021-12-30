@@ -1,7 +1,10 @@
 package teachmakitra.microservices.spring.common.exception;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.message.ObjectMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,8 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import teachmakitra.microservices.spring.common.dto.ProblemDto;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,26 +23,34 @@ public class ServiceExceptionHandler {
 
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<ProblemDto> handleServiceException(ServiceException exception, WebRequest request) {
-        ProblemDto problemDto = ProblemDto.builder()
-                                          .status(formatStatus(exception.getStatus()))
-                                          .code(formatCode(exception.getCode()))
-                                          .message(formatMessage(exception.getMessage()))
-                                          .errors(formatErrors(exception.getErrors()))
-                                          .build();
-        logger.atWarn()
-              .withThrowable(exception)
-              .log("{}/{}/{} - {}: {}",
-                   problemDto::getStatus,
-                   problemDto::getCode,
-                   () -> problemDto.getErrors().toString(),
-                   exception::getMessage,
-                   () -> exception.getAttributes().toString());
+        String httpStatus = formatStatus(exception.getStatus());
+        String code = formatCode(exception.getCode());
+        String message = formatMessage(exception.getMessage());
+        List<String> errors = formatErrors(exception.getErrors());
+
+        LogBuilder logBuilder = logger.atLevel(exception.isCritical() ? Level.ERROR : Level.WARN);
+        if (exception.isCritical()) {
+            logBuilder.withThrowable(exception);
+        }
+
+        logBuilder.log(() -> new ObjectMessage(ProblemLog.builder()
+                                                         .httpStatus(httpStatus)
+                                                         .code(code)
+                                                         .message(message)
+                                                         .errors(errors)
+                                                         .attributes(exception.getAttributes())
+                                                         .build()));
 
         return ResponseEntity.status(exception.getStatus())
-                             .body(problemDto);
+                             .body(ProblemDto.builder()
+                                             .status(httpStatus)
+                                             .code(code)
+                                             .message(message)
+                                             .errors(errors)
+                                             .build());
     }
 
-    private Collection<String> formatErrors(List<ErrorCode> errors) {
+    private List<String> formatErrors(List<ErrorCode> errors) {
         if (errors == null) {
             return List.of();
         }

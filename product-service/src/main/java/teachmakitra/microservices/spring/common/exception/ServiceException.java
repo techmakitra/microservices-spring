@@ -13,6 +13,7 @@ import java.util.*;
 @EqualsAndHashCode(callSuper = true)
 public class ServiceException extends RuntimeException {
     HttpStatus status;
+    boolean isCritical;
     ErrorCode code;
     Map<String, String> attributes;
     List<ErrorCode> errors;
@@ -23,12 +24,14 @@ public class ServiceException extends RuntimeException {
                             ErrorCode code,
                             Map<String, String> attributes,
                             HttpStatus status,
-                            List<ErrorCode> errors) {
+                            List<ErrorCode> errors,
+                            boolean isCritical) {
         super(message, cause);
         this.status = status;
         this.attributes = attributes;
         this.errors = errors;
         this.code = code;
+        this.isCritical = isCritical;
     }
 
     public static class ServiceExceptionBuilder {
@@ -46,7 +49,8 @@ public class ServiceException extends RuntimeException {
                     this.code,
                     Collections.unmodifiableMap(this.attributes),
                     this.status,
-                    Collections.unmodifiableList(this.errors));
+                    Collections.unmodifiableList(this.errors),
+                    isCritical);
         }
 
         public ServiceExceptionBuilder attribute(String name, Object value) {
