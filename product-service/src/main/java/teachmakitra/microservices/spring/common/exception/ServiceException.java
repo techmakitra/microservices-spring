@@ -13,35 +13,41 @@ import java.util.*;
 @EqualsAndHashCode(callSuper = true)
 public class ServiceException extends RuntimeException {
     HttpStatus status;
+    ErrorCode code;
     Map<String, String> attributes;
-    List<Problem> problems;
+    @Singular
+    List<String> errors;
 
     @Builder
     public ServiceException(String message,
                             Throwable cause,
+                            ErrorCode code,
                             Map<String, String> attributes,
                             HttpStatus status,
-                            List<Problem> problems) {
+                            List<String> errors) {
         super(message, cause);
         this.status = status;
-        this.problems = problems;
         this.attributes = attributes;
+        this.errors = errors;
+        this.code = code;
     }
 
     public static class ServiceExceptionBuilder {
 
+
         ServiceExceptionBuilder() {
             this.attributes = new LinkedHashMap<>();
-            this.problems = new ArrayList<>();
+            this.errors = new ArrayList<>();
         }
 
         public ServiceException build() {
             return new ServiceException(
                     this.message,
                     this.cause,
+                    this.code,
                     Collections.unmodifiableMap(this.attributes),
                     this.status,
-                    Collections.unmodifiableList(this.problems));
+                    Collections.unmodifiableList(this.errors));
         }
 
         public ServiceExceptionBuilder attribute(String name, Object value) {
