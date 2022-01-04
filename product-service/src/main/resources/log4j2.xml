@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" packages="teachmakitra.microservices.spring.common.logging">
+
+    <Appenders>
+        <Console name="LogInJSON" target="SYSTEM_OUT">
+            <!--<CustomLayout></CustomLayout>-->
+            <!--<JsonLayout compact="true"
+                        complete="false"
+                        eventEol="true"
+                        properties="true"
+                        propertiesAsList="true"
+                        objectMessageAsJsonObject="true">
+                <KeyValuePair key="customField" value="customFieldValue" />
+            </JsonLayout>-->
+
+            <!--Elastic Common Schema https://www.elastic.co/guide/en/ecs/current/ecs-guidelines.html-->
+            <JsonTemplateLayout eventTemplateUri="classpath:jsonLogLayout.json">
+            </JsonTemplateLayout>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.abhishek.log4j2" level="debug" additivity="false">
+            <AppenderRef ref="LogInJSON"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="LogInJSON"/>
+        </Root>
+    </Loggers>
+</Configuration>

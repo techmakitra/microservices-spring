@@ -1,4 +1,4 @@
-package teachmakitra.microservices.spring.product.error;
+package teachmakitra.microservices.spring.product.enums;
 
 import teachmakitra.microservices.spring.common.exception.ErrorCode;
 

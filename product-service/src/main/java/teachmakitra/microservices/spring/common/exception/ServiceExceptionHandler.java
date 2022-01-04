@@ -1,25 +1,29 @@
 package teachmakitra.microservices.spring.common.exception;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.message.ObjectMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import teachmakitra.microservices.spring.common.dto.ProblemDto;
+import teachmakitra.microservices.spring.common.logging.LogMessage;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Log4j2
 @ControllerAdvice
 public class ServiceExceptionHandler {
 
 
-    private static final Logger logger = LogManager.getLogger();
+    //private static final Logger logger = LogManager.getLogger();
+
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<ProblemDto> handleServiceException(ServiceException exception, WebRequest request) {
@@ -28,19 +32,13 @@ public class ServiceExceptionHandler {
         String message = formatMessage(exception.getMessage());
         List<String> errors = formatErrors(exception.getErrors());
 
-        LogBuilder logBuilder = logger.atLevel(exception.isCritical() ? Level.ERROR : Level.WARN);
-        if (exception.isCritical()) {
-            logBuilder.withThrowable(exception);
-        }
-
-        logBuilder.log(() -> new ObjectMessage(ProblemLog.builder()
-                                                         .httpStatus(httpStatus)
-                                                         .code(code)
-                                                         .message(message)
-                                                         .errors(errors)
-                                                         .attributes(exception.getAttributes())
-                                                         .build()));
-
+        log.atLevel(Level.WARN)
+           .withThrowable(exception)
+           .log(() -> LogMessage.withMessage("Service exception")
+                                .value("message", message)
+                                .value("httpStatus", httpStatus)
+                                .value("code", code)
+                                .value("errors", errors));
         return ResponseEntity.status(exception.getStatus())
                              .body(ProblemDto.builder()
                                              .status(httpStatus)
