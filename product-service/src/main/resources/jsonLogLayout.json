@@ -17,6 +17,9 @@
   "data" : {
     "$resolver": "logMessageData"
   },
+  "traceInfo" : {
+    "$resolver": "jaegerTrace"
+  },
   "error.type": {
     "$resolver": "exception",
     "field": "className"

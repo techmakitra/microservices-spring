@@ -8,6 +8,13 @@ import org.apache.logging.log4j.message.Message;
 
 public class LogMessageDataResolver implements EventResolver {
 
+
+    @Override
+    public boolean isResolvable(LogEvent value) {
+        return value.getMessage() instanceof LogMessage &&
+                !((LogMessage) value.getMessage()).getData().isEmpty();
+    }
+
     @Override
     public void resolve(LogEvent value, JsonWriter jsonWriter) {
         Message message = value.getMessage();

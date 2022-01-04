@@ -10,17 +10,23 @@ import java.util.Map;
 @Getter
 public class LogMessage implements Message, StringBuilderFormattable {
 
+    private boolean isImportant;
     private String message;
     @Getter
     private Map<String, Object> data = new LinkedHashMap<>();
     private boolean appendParameters = true;
 
-    private LogMessage(String message) {
+    private LogMessage(String message, boolean isImportant) {
         this.message = message;
+        this.isImportant = isImportant;
     }
 
-    public static LogMessage withMessage(String message) {
-        return new LogMessage(message);
+    public static LogMessage create(String message) {
+        return new LogMessage(message,false);
+    }
+
+    public static LogMessage createImportant(String message) {
+        return new LogMessage(message, true);
     }
 
     public LogMessage appendParameters(boolean appendParametersFlag) {

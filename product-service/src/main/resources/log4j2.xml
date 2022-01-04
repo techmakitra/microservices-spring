@@ -7,8 +7,8 @@
             <!--<JsonLayout compact="true"
                         complete="false"
                         eventEol="true"
-                        properties="true"
-                        propertiesAsList="true"
+                        properties="false"
+                        propertiesAsList="false"
                         objectMessageAsJsonObject="true">
                 <KeyValuePair key="customField" value="customFieldValue" />
             </JsonLayout>-->
@@ -17,11 +17,9 @@
             <JsonTemplateLayout eventTemplateUri="classpath:jsonLogLayout.json">
             </JsonTemplateLayout>
         </Console>
+
     </Appenders>
     <Loggers>
-        <Logger name="com.abhishek.log4j2" level="debug" additivity="false">
-            <AppenderRef ref="LogInJSON"/>
-        </Logger>
         <Root level="info">
             <AppenderRef ref="LogInJSON"/>
         </Root>
