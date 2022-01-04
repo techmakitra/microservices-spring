@@ -3,6 +3,7 @@ package teachmakitra.microservices.spring.common.tracing;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,15 @@ public class CustomTracingTagsInterceptor implements HandlerInterceptor {
         Tracer tracer = GlobalTracer.get();
         Span span = tracer.activeSpan();
         span.setTag("hostname", resoveHostname());
+        span.setTag("handler", resolveHandler(handler));
         return true;
+    }
+
+    private String resolveHandler(Object handler) {
+        if (handler instanceof HandlerMethod handlerMethod) {
+            return handlerMethod.getShortLogMessage();
+        }
+        return handler.toString();
     }
 
     private String resoveHostname() {
