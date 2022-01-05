@@ -3,7 +3,7 @@ services:
   product-service:
     image: product-service:latest
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
       - OTEL_JAVA_AGENT_ENABLED=true
       - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250

@@ -1,8 +1,7 @@
 package teachmakitra.microservices.spring.common.tracing;
 
-import io.opentracing.Span;
-import io.opentracing.Tracer;
-import io.opentracing.util.GlobalTracer;
+import io.opentelemetry.api.trace.Span;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -17,29 +16,16 @@ public class CustomTracingTagsInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        Tracer tracer = GlobalTracer.get();
-        Span span = tracer.activeSpan();
-        span.setTag("hostname", resoveHostname());
-        span.setTag("handler", resolveHandler(handler));
+        copyAttributeToTag(request, "X-TestRunID", "test.run_id");
+        copyAttributeToTag(request, "X-TestCaseID", "test.case_id");
         return true;
     }
 
-    private String resolveHandler(Object handler) {
-        if (handler instanceof HandlerMethod handlerMethod) {
-            return handlerMethod.getShortLogMessage();
+    private void copyAttributeToTag(HttpServletRequest request, String attributeName, String tagName) {
+        String attributeValue = request.getHeader(attributeName);
+        if (StringUtils.isNoneBlank(attributeValue)) {
+           Span.current().setAttribute(tagName, StringUtils.substring(attributeValue, 0, 100));
         }
-        return handler.toString();
     }
 
-    private String resoveHostname() {
-        if (this.hostname.get() != null) {
-            return this.hostname.get();
-        }
-        try {
-            this.hostname.set(InetAddress.getLocalHost().getHostName());
-            return this.hostname.get();
-        } catch (Exception e) {
-            return  "";
-        }
-    }
 }

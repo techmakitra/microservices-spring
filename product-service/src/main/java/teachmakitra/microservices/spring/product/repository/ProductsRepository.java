@@ -1,5 +1,7 @@
 package teachmakitra.microservices.spring.product.repository;
 
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.extension.annotations.WithSpan;
 import org.springframework.stereotype.Repository;
 import teachmakitra.microservices.spring.product.model.ProductModel;
 
@@ -12,6 +14,7 @@ public class ProductsRepository {
 
     private static final long MAX_COUNT = 1000;
 
+    @WithSpan
     public Optional<ProductModel> findById(String id) {
         if (Long.parseLong(id) >= MAX_COUNT) {
             return Optional.empty();
