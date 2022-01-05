@@ -1,8 +1,16 @@
 version: '3.7'
 services:
+  product-service:
+    image: product-service:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - OTEL_JAVA_AGENT_ENABLED=true
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
   jaeger:
     image: jaegertracing/all-in-one:latest
     ports:
       - "6831:6831/udp"
       - "16686:16686"
+      - "14250:14250"
 

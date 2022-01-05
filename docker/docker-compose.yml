@@ -1,0 +1,7 @@
+version: "3.7"
+services:
+  microservice-base-openjdk-java17-oracle:
+    build:
+      context: microservice-base-openjdk-java17-oracle/
+      dockerfile: Dockerfile
+    image: microservice-base-openjdk-java17-oracle

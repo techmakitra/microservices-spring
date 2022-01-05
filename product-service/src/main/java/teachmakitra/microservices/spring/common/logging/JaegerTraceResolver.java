@@ -1,7 +1,10 @@
 package teachmakitra.microservices.spring.common.logging;
 
+import io.opentracing.Span;
 import io.opentracing.SpanContext;
-import io.opentracing.contrib.web.servlet.filter.TracingFilter;
+
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.layout.template.json.resolver.EventResolver;
 import org.apache.logging.log4j.layout.template.json.util.JsonWriter;
@@ -12,7 +15,7 @@ public class JaegerTraceResolver implements EventResolver {
 
     @Override
     public boolean isResolvable(LogEvent event) {
-        return findSpanContext() != null;
+        return GlobalTracer.get() != null && GlobalTracer.get().activeSpan() != null;
     }
 
     @Override
@@ -22,8 +25,10 @@ public class JaegerTraceResolver implements EventResolver {
 
     @Override
     public void resolve(LogEvent value, JsonWriter jsonWriter) {
-        SpanContext spanContext = findSpanContext();
-        if (spanContext == null) {
+        Tracer tracer = GlobalTracer.get();
+        Span span = tracer.activeSpan();
+
+        if (span == null) {
             return;
         }
         StringBuilder sb = jsonWriter.getStringBuilder();
@@ -31,19 +36,9 @@ public class JaegerTraceResolver implements EventResolver {
             jsonWriter.writeSeparator();
         }
         jsonWriter.writeObjectKey("traceId");
-        jsonWriter.writeString(spanContext.toTraceId());
+        jsonWriter.writeString(span.context().toTraceId());
         jsonWriter.writeSeparator();
         jsonWriter.writeObjectKey("spanId");
-        jsonWriter.writeString(spanContext.toSpanId());
-    }
-
-
-    private SpanContext findSpanContext() {
-        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
-        if (attributes == null) {
-            return null;
-        }
-        return (SpanContext) attributes.getAttribute(TracingFilter.SERVER_SPAN_CONTEXT,
-                                                                RequestAttributes.SCOPE_REQUEST);
+        jsonWriter.writeString(span.context().toTraceId());
     }
 }
